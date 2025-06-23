@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marchenou - Commerce Local et Communautaire en Haïti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .seller-card:hover, .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .category-icon, .community-icon {
+            transition: all 0.3s ease;
+        }
+        .category-icon:hover, .community-icon:hover {
+            transform: scale(1.1);
+        }
+        .map-container {
+            height: 400px;
+            background-color: #eee;
+            border-radius: 1rem;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .nav-item.active {
+            border-bottom: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .video-thumbnail {
+            position: relative;
+            cursor: pointer;
+        }
+        .video-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        .community-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #3b82f6;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .seller-badge {
+            display: inline-block;
+            margin-right: 4px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+        .badge-new {
+            background-color: #10B981;
+            color: white;
+        }
+        .badge-certified {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .badge-top {
+            background-color: #F59E0B;
+            color: white;
+        }
+        .badge-reliable {
+            background-color: #8B5CF6;
+            color: white;
+        }
+        .badge-fast {
+            background-color: #EC4899;
+            color: white;
+        }
+        .badge-active {
+            background-color: #10B981;
+            color: white;
+        }
+        .badge-premium {
+            background-color: #F59E0B;
+            color: white;
+        }
+        .badge-ambassador {
+            background-color: #8B5CF6;
+            color: white;
+        }
+        .badge-delivery {
+            background-color: #3B82F6;
+            color: white;
+        }
+        .badge-mobilepay {
+            background-color: #10B981;
+            color: white;
+        }
+        .badge-discount {
+            background-color: #EC4899;
+            color: white;
+        }
+        .badge-boost {
+            background-color: #F59E0B;
+            color: white;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50">
+    <!-- PWA Install Banner -->
+    <div id="pwaBanner" class="bg-blue-500 text-white py-2 px-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <i class="fas fa-mobile-alt mr-3 text-xl"></i>
+            <span>Installer l'application Marchenou pour une meilleure expérience</span>
+        </div>
+        <button onclick="installPWA()" class="bg-white text-blue-500 px-4 py-1 rounded-full text-sm font-medium">Installer</button>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50" style="top: 48px;">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">M</div>
+                <span class="text-xl font-bold text-gray-800">Marchenou</span>
+            </div>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="nav-item active" data-page="home" data-translate="home">Accueil</a>
+                <a href="#" class="nav-item" data-page="boutique" data-translate="shop">Boutique</a>
+                <a href="#" class="nav-item" data-page="community-market" data-translate="community">Marché Communautaire</a>
+                <a href="#" class="nav-item" data-page="vendeur" data-translate="dashboard">Tableau de bord</a>
+                <a href="#" class="nav-item" data-page="top-vendeurs" data-translate="top-sellers">Top vendeurs</a>
+                <a href="#" class="nav-item" data-page="communication" data-translate="communication">Communication</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="md:hidden text-gray-600" id="mobile-menu-button">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <button class="hidden md:block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition" data-translate="login">Se connecter</button>
+                <button class="hidden md:block border border-blue-500 text-blue-500 hover:bg-blue-50 px-4 py-2 rounded-full transition" data-translate="signup">S'inscrire</button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden bg-white py-2 px-4 shadow-md" id="mobile-menu">
+            <a href="#" class="block py-2 nav-item active" data-page="home">Accueil</a>
+            <a href="#" class="block py-2 nav-item" data-page="boutique">Boutique</a>
+            <a href="#" class="block py-2 nav-item" data-page="community-market">Marché Communautaire</a>
+            <a href="#" class="block py-2 nav-item" data-page="vendeur">Tableau de bord</a>
+            <a href="#" class="block py-2 nav-item" data-page="top-vendeurs">Top vendeurs</a>
+            <a href="#" class="block py-2 nav-item" data-page="communication">Communication</a>
+            <div class="flex space-x-2 py-2">
+                <button class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full transition">Connexion</button>
+                <button class="flex-1 border border-blue-500 text-blue-500 hover:bg-blue-50 px-4 py-2 rounded-full transition">Inscription</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main>
+        <!-- Home Page -->
+        <div class="page active" id="home">
+            <!-- Hero Section -->
+            <section class="hero-gradient py-16 md:py-24">
+                <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+                    <div class="md:w-1/2 mb-10 md:mb-0">
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6" data-translate="hero-title">Dynamisez votre commerce local avec Marchenou</h1>
+                        <p class="text-lg text-gray-600 mb-8" data-translate="hero-text">Connectez les vendeurs et acheteurs haïtiens dans leur zone géographique avec une plateforme simple et accessible.</p>
+                        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-full font-medium transition" data-translate="seller-btn">Je suis vendeur</button>
+                            <button class="border border-blue-500 text-blue-500 hover:bg-blue-50 px-6 py-3 rounded-full font-medium transition" data-translate="buyer-btn">Je cherche un vendeur</button>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center">
+                        <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Commerce local en Haïti" class="rounded-xl shadow-xl w-full max-w-md">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Comment ça marche ?</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 p-6 rounded-xl text-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-map-marker-alt text-blue-500 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Géolocalisation</h3>
+                            <p class="text-gray-600">Trouvez des vendeurs près de chez vous grâce à notre système de géolocalisation simple.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-xl text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-store text-green-500 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Visibilité</h3>
+                            <p class="text-gray-600">Les petits commerces deviennent visibles et accessibles à toute leur communauté.</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-xl text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-handshake text-purple-500 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold mb-2">Transactions simples</h3>
+                            <p class="text-gray-600">Pas besoin de système bancaire complexe, échangez en toute simplicité.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Creation Section -->
+            <section class="py-16 bg-gray-50">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Création de boutique ou service</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-store text-blue-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Boutique physique</h3>
+                            <p class="text-xs text-gray-500 mt-1">Local commercial</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-laptop text-green-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Boutique en ligne</h3>
+                            <p class="text-xs text-gray-500 mt-1">E-commerce</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-truck text-yellow-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Service de livraison</h3>
+                            <p class="text-xs text-gray-500 mt-1">Transport</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-utensils text-red-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Restauration</h3>
+                            <p class="text-xs text-gray-500 mt-1">Bar, restaurant</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-cut text-purple-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Service de beauté</h3>
+                            <p class="text-xs text-gray-500 mt-1">Coiffure, esthétique</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-tools text-indigo-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Artisanat</h3>
+                            <p class="text-xs text-gray-500 mt-1">Produits faits main</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-hand-holding-heart text-pink-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Service à domicile</h3>
+                            <p class="text-xs text-gray-500 mt-1">Ménage, garde d'enfants</p>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition">
+                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-plus text-gray-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Autre activité</h3>
+                            <p class="text-xs text-gray-500 mt-1">Personnaliser</p>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product Categories Section -->
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Catégories de produits</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-utensils text-yellow-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Nourriture</h3>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-tshirt text-red-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Vêtements</h3>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-tools text-blue-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Artisanat</h3>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-carrot text-green-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Produits frais</h3>
+                        </a>
+                        <a href="#" class="category-card bg-white p-6 rounded-xl text-center shadow-sm hover:shadow-md transition border border-gray-100">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4 category-icon">
+                                <i class="fas fa-mobile-alt text-purple-500 text-xl"></i>
+                            </div>
+                            <h3 class="font-medium">Électronique</h3>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Sellers -->
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-4">
+                    <div class="flex justify-between items-center mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800">Vendeurs à la une</h2>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 font-medium" data-page="sellers">Voir tout <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Seller Card 1 -->
+                        <div class="seller-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1603105037880-880cd4edfb1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80" alt="Vendeur" class="w-full h-full object-cover">
+                                <div class="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-full">Nouveau</div>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-300 overflow-hidden mr-3">
+                                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Profil" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold">Marie's Boutique</h3>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-star text-yellow-400 text-xs mr-1"></i>
+                                            <span class="text-gray-600 text-sm">4.8 (24 avis)</span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <span class="seller-badge badge-new">Nouveau</span>
+                                            <span class="seller-badge badge-certified">Certifié</span>
+                                            <span class="seller-badge badge-reliable">Fiable</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4">Vêtements traditionnels haïtiens faits main avec des matériaux locaux.</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Port-au-Prince</span>
+                                    <button class="text-blue-500 hover:text-blue-600 text-sm font-medium">Voir boutique</button>
+                                </div>
+                            </div>
+                        </div>
+                                                
+                        <!-- Seller Card 2 -->
+                        <div class="seller-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200">
+                                <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=781&q=80" alt="Vendeur" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-300 overflow-hidden mr-3">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profil" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold">Chez Pierre</h3>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-star text-yellow-400 text-xs mr-1"></i>
+                                            <span class="text-gray-600 text-sm">4.9 (36 avis)</span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <span class="seller-badge badge-top">Top vendeur</span>
+                                            <span class="seller-badge badge-fast">Livraison rapide</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4">Plats traditionnels haïtiens préparés avec des ingrédients frais du marché.</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Cap-Haïtien</span>
+                                    <button class="text-blue-500 hover:text-blue-600 text-sm font-medium">Voir boutique</button>
+                                </div>
+                            </div>
+                        </div>
+                                                
+                        <!-- Seller Card 3 -->
+                        <div class="seller-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200">
+                                <img src="https://images.unsplash.com/photo-1604176354202-3f32e5640c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Vendeur" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-6">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 rounded-full bg-gray-300 overflow-hidden mr-3">
+                                        <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Profil" class="w-full h-full object-cover">
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold">Artisanat Jacques</h3>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-star text-yellow-400 text-xs mr-1"></i>
+                                            <span class="text-gray-600 text-sm">4.7 (18 avis)</span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <span class="seller-badge badge-certified">Certifié</span>
+                                            <span class="seller-badge badge-reliable">Fiable</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-4">Objets décoratifs et utilitaires en bois sculpté à la main.</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Jacmel</span>
+                                    <button class="text-blue-500 hover:text-blue-600 text-sm font-medium">Voir boutique</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Community Market Preview -->
+            <section class="py-16 bg-gray-50">
+                <div class="container mx-auto px-4">
+                    <div class="flex justify-between items-center mb-12">
+                        <h2 class="text-3xl font-bold text-gray-800">Marchés Communautaires</h2>
+                        <a href="#" class="text-blue-500 hover:text-blue-600 font-medium" data-page="community-market">Voir tout <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <!-- Community Market Card 1 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-64 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">12 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Marché Artisanal de Jacmel</h3>
+                                <p class="text-gray-600 mb-4">Un regroupement d'artisans locaux proposant des produits uniques faits main.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/women/12.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/33.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+9</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres actifs</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-3 gap-2 mb-4">
+                                    <div class="video-thumbnail h-20 rounded-md overflow-hidden" onclick="showVideoModal()">
+                                        <img src="https://images.unsplash.com/photo-1585771724684-38269d6639fd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="w-full h-full object-cover">
+                                        <i class="fas fa-play absolute z-10"></i>
+                                    </div>
+                                    <div class="video-thumbnail h-20 rounded-md overflow-hidden" onclick="showVideoModal()">
+                                        <img src="https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" class="w-full h-full object-cover">
+                                        <i class="fas fa-play absolute z-10"></i>
+                                    </div>
+                                    <div class="h-20 rounded-md bg-gray-100 flex items-center justify-center text-gray-400">
+                                        <i class="fas fa-images text-xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Jacmel</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Rejoindre</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Community Market Card 2 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-64 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1468&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">8 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Producteurs de Kenscoff</h3>
+                                <p class="text-gray-600 mb-4">Des agriculteurs locaux unis pour proposer leurs produits frais directement aux consommateurs.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/men/45.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/28.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+5</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres actifs</span>
+                                </div>
+                                
+                                <div class="grid grid-cols-3 gap-2 mb-4">
+                                    <div class="video-thumbnail h-20 rounded-md overflow-hidden" onclick="showVideoModal()">
+                                        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1380&q=80" class="w-full h-full object-cover">
+                                        <i class="fas fa-play absolute z-10"></i>
+                                    </div>
+                                    <div class="video-thumbnail h-20 rounded-md overflow-hidden" onclick="showVideoModal()">
+                                        <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" class="w-full h-full object-cover">
+                                        <i class="fas fa-play absolute z-10"></i>
+                                    </div>
+                                    <div class="h-20 rounded-md bg-gray-100 flex items-center justify-center text-gray-400">
+                                        <i class="fas fa-images text-xl"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Kenscoff</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Rejoindre</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="border-2 border-blue-500 text-blue-500 hover:bg-blue-50 px-6 py-3 rounded-full font-medium transition flex items-center mx-auto">
+                            <i class="fas fa-plus-circle mr-2"></i> Créer un marché communautaire
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Call to Action -->
+            <section class="py-16 bg-blue-500 text-white">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="text-3xl font-bold mb-6">Prêt à rejoindre la communauté Marchenou ?</h2>
+                    <p class="text-xl mb-8 max-w-2xl mx-auto">Que vous soyez vendeur, acheteur ou communauté de marchands, notre plateforme est conçue pour faciliter vos échanges locaux.</p>
+                    <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+                        <button class="bg-white text-blue-500 hover:bg-gray-100 px-6 py-3 rounded-full font-medium transition">Inscription vendeur</button>
+                        <button class="border border-white text-white hover:bg-blue-600 px-6 py-3 rounded-full font-medium transition">Découvrir les vendeurs</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Community Market Page -->
+        <div class="page" id="community-market">
+            <section class="py-12">
+                <div class="container mx-auto px-4">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">Marchés Communautaires</h1>
+                        <p class="text-gray-600">Rejoignez ou créez un groupe de vendeurs pour augmenter votre visibilité et collaborer</p>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                            <div class="relative w-full md:w-1/3">
+                                <input type="text" placeholder="Rechercher un marché communautaire..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                            <div class="flex space-x-2">
+                                <select class="border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Trier par</option>
+                                    <option>Plus proches</option>
+                                    <option>Plus actifs</option>
+                                    <option>Nouveaux</option>
+                                </select>
+                                <select class="border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Toutes catégories</option>
+                                    <option>Artisanat</option>
+                                    <option>Produits frais</option>
+                                    <option>Vêtements</option>
+                                    <option>Nourriture</option>
+                                    <option>Autres</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                        <!-- Community Market Card 1 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">12 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Marché Artisanal de Jacmel</h3>
+                                <p class="text-gray-600 text-sm mb-4">Un regroupement d'artisans locaux proposant des produits uniques faits main.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/women/12.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/32.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/33.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+9</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Jacmel</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Voir détails</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Community Market Card 2 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1468&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">8 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Producteurs de Kenscoff</h3>
+                                <p class="text-gray-600 text-sm mb-4">Des agriculteurs locaux unis pour proposer leurs produits frais directement aux consommateurs.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/men/45.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/28.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+5</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Kenscoff</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Voir détails</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Community Market Card 3 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1584466977773-e625c37cdd50?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">5 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Couturiers de Pétion-Ville</h3>
+                                <p class="text-gray-600 text-sm mb-4">Des tailleurs indépendants unis pour proposer des vêtements sur mesure.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/women/44.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/75.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/65.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+2</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Pétion-Ville</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Voir détails</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Community Market Card 4 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1518544866335-95a5acf73f14?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">15 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Marché de Croix-des-Bouquets</h3>
+                                <p class="text-gray-600 text-sm mb-4">Artisans métalliques et vendeurs de produits divers du célèbre marché.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/men/12.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/22.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/33.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+12</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Croix-des-Bouquets</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Voir détails</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Community Market Card 5 -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
+                            <div class="h-48 bg-gray-200 relative">
+                                <img src="https://images.unsplash.com/photo-1565299507177-b0ac66763828?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1422&q=80" alt="Marché Communautaire" class="w-full h-full object-cover">
+                                <div class="community-badge">7 vendeurs</div>
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Pâtissiers Unis</h3>
+                                <p class="text-gray-600 text-sm mb-4">Des pâtissiers locaux proposant leurs spécialités pour tous les événements.</p>
+                                
+                                <div class="flex items-center mb-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://randomuser.me/api/portraits/women/55.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/women/66.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <img src="https://randomuser.me/api/portraits/men/77.jpg" class="w-8 h-8 rounded-full border-2 border-white" alt="Membre">
+                                        <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border-2 border-white flex items-center justify-center text-xs font-bold">+4</div>
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-500">Membres</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-500 text-sm"><i class="fas fa-map-marker-alt mr-1"></i> Port-au-Prince</span>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm">Voir détails</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Community Market Card 6 - Create New -->
+                        <div class="community-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center p-6 text-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-plus text-blue-500 text-2xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold mb-2">Créer un nouveau marché</h3>
+                            <p class="text-gray-600 text-sm mb-4">Regroupez-vous avec d'autres vendeurs pour augmenter votre visibilité</p>
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full">Créer maintenant</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex justify-center">
+                        <nav class="flex items-center space-x-2">
+                            <button class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white">1</button>
+                            <button class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100">2</button>
+                            <button class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100">3</button>
+                            <span class="px-2">...</span>
+                            <button class="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-100">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Create Community Market Modal -->
+            <div id="createCommunityModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-xl overflow-hidden w-full max-w-2xl">
+                    <div class="p-6 border-b border-gray-200">
+                        <h2 class="text-2xl font-bold">Créer un marché communautaire</h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <form>
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Nom du marché communautaire</label>
+                                <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ex: Marché Artisanal de Jacmel">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Description</label>
+                                <textarea rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Décrivez votre marché communautaire..."></textarea>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Catégorie</label>
+                                    <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        <option>Artisanat</option>
+                                        <option>Produits frais</option>
+                                        <option>Vêtements</option>
+                                        <option>Nourriture</option>
+                                        <option>Autres</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Localisation</label>
+                                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ville ou quartier">
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Photo du marché</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                                    <i class="fas fa-camera text-3xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">Glissez-déposez une image ou cliquez pour sélectionner</p>
+                                    <button type="button" class="mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm">Choisir une image</button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Vidéos de présentation (optionnel)</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center">
+                                        <i class="fas fa-video text-xl text-gray-400 mb-1"></i>
+                                        <p class="text-xs text-gray-500">Vidéo 1</p>
+                                    </div>
+                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center h-32 flex flex-col items-center justify-center">
+                                        <i class="fas fa-video text-xl text-gray-400 mb-1"></i>
+                                        <p class="text-xs text-gray-500">Vidéo 2</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Inviter des membres</label>
+                                <div class="flex flex-wrap gap-2 mb-2">
+                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center">
+                                        Marie L. <button class="ml-1 text-blue-500 hover:text-blue-700"><i class="fas fa-times"></i></button>
+                                    </span>
+                                    <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center">
+                                        Jean R. <button class="ml-1 text-blue-500 hover:text-blue-700"><i class="fas fa-times"></i></button>
+                                    </span>
+                                </div>
+                                <div class="relative">
+                                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Rechercher des vendeurs à inviter">
+                                    <button class="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                                <button type="button" onclick="closeCreateCommunityModal()" class="border border-gray-300 text-gray-700 hover:bg-gray-100 px-6 py-2 rounded-full">Annuler</button>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full">Créer le marché</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other pages (About, Sellers, Community, Contact) would remain the same as in the original code -->
+        <!-- ... -->
+
+    </main>
+
+    <!-- Back to top button -->
+    <button onclick="topFunction()" id="backToTopBtn" title="Retounen lakay" class="fixed bottom-6 right-6 bg-blue-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-600 transition hidden">
+        <i class="fas fa-home"></i>
+    </button>
+
+    <!-- Video Modal -->
+    <div id="videoModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg overflow-hidden w-full max-w-4xl">
+            <div class="relative pt-[56.25%]">
+                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/video-id" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="p-4 flex justify-between items-center bg-gray-100">
+                <p class="text-gray-700">Découvrez Marchenou en 15 secondes</p>
+                <button onclick="closeVideoModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">M</div>
+                        <span class="text-xl font-bold">Marchenou</span>
+                    </div>
+                    <p class="text-gray-400">Plateforme numérique pour faciliter le commerce local et communautaire en Haïti.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Navigation</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" data-page="home">Accueil</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" data-page="boutique">Boutique</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" data-page="community-market">Marché Communautaire</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" data-page="vendeur">Tableau de bord</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition" data-page="top-vendeurs">Top vendeurs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Langue</h3>
+                    <select id="languageSelect" class="w-full bg-gray-700 border border-gray-600 text-white rounded-lg px-4 py-2 mb-4">
+                        <option value="fr">Français</option>
+                        <option value="ht">Kreyòl</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                    </select>
+                    
+                    <h3 class="text-lg font-semibold mb-4">Ressources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Guide du vendeur</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Créer un marché communautaire</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Conditions d'utilisation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Installer l'app</h3>
+                    <div class="mb-4 p-4 bg-gray-700 rounded-lg text-center">
+                        <img src="qr-code-placeholder.png" alt="QR Code" class="w-32 h-32 mx-auto mb-2">
+                        <p class="text-sm text-gray-300">Scanner pour installer</p>
+                    </div>
+                    <button class="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-download mr-2"></i> Télécharger
+                    </button>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-700 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 mb-4 md:mb-0">© 2023 Marchenou. Tous droits réservés.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Back to top button
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("backToTopBtn").style.display = "flex";
+            } else {
+                document.getElementById("backToTopBtn").style.display = "none";
+            }
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+
+        // Video modal
+        function showVideoModal() {
+            document.getElementById('videoModal').classList.remove('hidden');
+        }
+
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.add('hidden');
+        }
+
+        // Create Community modal
+        function showCreateCommunityModal() {
+            document.getElementById('createCommunityModal').classList.remove('hidden');
+        }
+
+        function closeCreateCommunityModal() {
+            document.getElementById('createCommunityModal').classList.add('hidden');
+        }
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Page navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(navItem => {
+                    navItem.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item
+                this.classList.add('active');
+                
+                // Get the page to show
+                const pageId = this.getAttribute('data-page');
+                
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Show the selected page
+                document.getElementById(pageId).classList.add('active');
+                
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+
+        // Seller card hover effect
+        document.querySelectorAll('.seller-card, .community-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+            });
+                    
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Category icon hover effect
+        document.querySelectorAll('.category-icon, .community-icon').forEach(icon => {
+            icon.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+                    
+            icon.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set home page as active by default
+            document.getElementById('home').classList.add('active');
+            
+            // Detect browser language
+            const userLang = navigator.language || navigator.userLanguage;
+            if (userLang.includes('ht')) {
+                document.getElementById('languageSelect').value = 'ht';
+            } else if (userLang.includes('en')) {
+                document.getElementById('languageSelect').value = 'en';
+            } else if (userLang.includes('es')) {
+                document.getElementById('languageSelect').value = 'es';
+            }
+            
+            // Check if PWA is already installed
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                document.getElementById('pwaBanner').style.display = 'none';
+                document.querySelector('header').style.top = '0';
+            }
+        });
+
+        // PWA Installation
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.getElementById('pwaBanner').style.display = 'none';
+                        document.querySelector('header').style.top = '0';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // Language switcher
+        document.getElementById('languageSelect').addEventListener('change', function() {
+            const lang = this.value;
+            localStorage.setItem('preferredLanguage', lang);
+            translatePage(lang);
+        });
+
+        // Translation dictionary
+        const translations = {
+            'fr': {
+                'home': 'Accueil',
+                'shop': 'Boutique',
+                'community': 'Marché Communautaire',
+                'dashboard': 'Tableau de bord',
+                'top-sellers': 'Top vendeurs',
+                'communication': 'Communication',
+                'login': 'Se connecter',
+                'signup': "S'inscrire",
+                'hero-title': 'Dynamisez votre commerce local avec Marchenou',
+                'hero-text': 'Connectez les vendeurs et acheteurs haïtiens dans leur zone géographique avec une plateforme simple et accessible.',
+                'seller-btn': 'Je suis vendeur',
+                'buyer-btn': 'Je cherche un vendeur'
+            },
+            'ht': {
+                'home': 'Lakay',
+                'shop': 'Boutik',
+                'community': 'Mache Kominotè',
+                'dashboard': 'Tablo Kontwòl',
+                'top-sellers': 'Top vandè',
+                'communication': 'Kominikasyon',
+                'login': 'Konekte',
+                'signup': 'Enskri',
+                'hero-title': 'Dynamize komès lokal ou ak Marchenou',
+                'hero-text': 'Konekte vandè ak achtè ayisyen nan zòn yo ak yon platfòm ki senp epi ki aksesib.',
+                'seller-btn': 'Mwen se yon vandè',
+                'buyer-btn': 'Mwen chache yon vandè'
+            },
+            'en': {
+                'home': 'Home',
+                'shop': 'Shop',
+                'community': 'Community Market',
+                'dashboard': 'Dashboard',
+                'top-sellers': 'Top Sellers',
+                'communication': 'Communication',
+                'login': 'Login',
+                'signup': 'Sign Up',
+                'hero-title': 'Boost your local business with Marchenou',
+                'hero-text': 'Connect Haitian sellers and buyers in their geographic area with a simple and accessible platform.',
+                'seller-btn': 'I am a seller',
+                'buyer-btn': 'I am looking for a seller'
+            },
+            'es': {
+                'home': 'Inicio',
+                'shop': 'Tienda',
+                'community': 'Mercado Comunitario',
+                'dashboard': 'Panel de Control',
+                'top-sellers': 'Mejores Vendedores',
+                'communication': 'Comunicación',
+                'login': 'Iniciar Sesión',
+                'signup': 'Registrarse',
+                'hero-title': 'Impulsa tu negocio local con Marchenou',
+                'hero-text': 'Conecta vendedores y compradores haitianos en su área geográfica con una plataforma simple y accesible.',
+                'seller-btn': 'Soy vendedor',
+                'buyer-btn': 'Busco un vendedor'
+            }
+        };
+
+        // Translate page content
+        function translatePage(lang) {
+            const trans = translations[lang] || translations['fr'];
+            
+            // Update navigation
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (trans[key]) {
+                    el.textContent = trans[key];
+                }
+            });
+            
+            // Update buttons and other elements
+            document.querySelectorAll('[data-translate-attr]').forEach(el => {
+                const [attr, key] = el.getAttribute('data-translate-attr').split(':');
+                if (trans[key]) {
+                    el.setAttribute(attr, trans[key]);
+                }
+            });
+        }
+
+        // Initialize language
+        const preferredLanguage = localStorage.getItem('preferredLanguage') || 
+                                (navigator.language.includes('ht') ? 'ht' : 'fr');
+        document.getElementById('languageSelect').value = preferredLanguage;
+        translatePage(preferredLanguage);
+
+        // Free trial banner
+        function showFreeTrialBanner() {
+            const banner = document.createElement('div');
+            banner.className = 'bg-green-500 text-white py-2 px-4 text-center';
+            banner.innerHTML = `
+                <p>Essai gratuit 1 mois activé! <button onclick="this.parentNode.remove()" class="ml-2 text-white underline">Fermer</button></p>
+            `;
+            document.body.insertBefore(banner, document.body.firstChild);
+        }
+
+        // Show free trial banner after 3 seconds
+        setTimeout(showFreeTrialBanner, 3000);
+    </script>
+</body>
+</html>
